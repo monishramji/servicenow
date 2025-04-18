@@ -1,0 +1,50 @@
+function onClick(g_form) {
+    var descriptionFields = [{
+        type: 'textarea',
+        name: 'description',
+        label: 'Description',
+        mandatory: true
+    }];
+
+    // var referenceFields = [{
+    //     type: 'reference',
+    //     name: 'assessment_template',
+    //     //label: 'Assessment Template',
+    // 	label: getMessage('select assessment template'),
+    //     mandatory: true,
+    //     reference: 'sn_smart_asmt_template_list' // Replace with the actual reference table name
+    // }];
+    var referenceFields = [{
+        type: 'reference',
+        name: 'assessment_template',
+        label: getMessage('select assessment template'),
+        mandatory: true,
+        reference: 'sn_smart_asmt_template_list',
+        referringTable: 'sn_smart_asmt_context_item',
+        query: 'sys_idIN6925e0fe43e14610cca086710cb8f237,f676728d43401210fdbc905cf9b8f2ee',
+        referringRecordId: g_form.getUniqueValue(),
+        value: g_form.getValue('assessment_template'),
+        displayValue: g_form.getDisplayValue('assessment_template')
+    }];
+
+    g_modal.showFields({
+        title: 'Update Description and Reference',
+        fields: descriptionFields.concat(referenceFields),
+        instruction: 'Please provide a description and select an assessment template.',
+        size: 'md',
+        cancelTitle: 'Cancel',
+        confirmTitle: 'OK',
+        cancelType: 'default',
+        confirmType: 'confirm'
+    }).then(function(fieldValues) {
+        if (fieldValues) {
+            var updatedFields = fieldValues["updatedFields"];
+            var descriptionValue = updatedFields.find(field => field.name === 'description').value;
+            var referenceValue = updatedFields.find(field => field.name === 'assessment_template').value;
+
+            g_form.setValue('description', descriptionValue);
+            g_form.setValue('assessment_template', referenceValue);
+            g_form.save();
+        }
+    });
+}
